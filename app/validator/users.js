@@ -5,7 +5,7 @@ const Joi = require('joi');
 
 exports.signUpValidation = signUpValidation;
 
-function signUpValidation(req,res){
+function signUpValidation(req,res,next){
 var user_name = req.body.user_name;
 	var email = req.body.email;
 	var password = req.body.password;
@@ -17,15 +17,15 @@ const schema = Joi.object().keys({
     password: Joi.string().required(),
     user_type: Joi.number().integer().min(1).max(2).required()
 })
-Joi.validate({ user_name: user_name, email: email,password:password,user_type:user_type }, schema, function (err, result) { 
+Joi.validate({ user_name: user_name, email: email,password:password,user_type:user_type }, schema, function (err, result) {
 if(err){
-    console.log("validator"); 
+    console.log("validator");
     console.log(err);
 }else{
     console.log("validator result");
     console.log(result);
+		next();
 }
-
 })
 
 }

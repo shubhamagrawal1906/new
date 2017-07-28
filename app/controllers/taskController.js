@@ -27,7 +27,7 @@ function createTaskStage(req, res) {
                 cb(resp.ERROR.TASK_ALREADY_EXIST);
             }else{
                 cb(null,userCount);
-            }    
+            }
     })
     },
        incrementValueOfOtherTaskStage:function(cb){
@@ -39,7 +39,7 @@ function createTaskStage(req, res) {
              console.log("correct");
              cb(null,result);
          }
-        })   
+        })
     },
         createTaskStage:['checkTaskStagePresentWithSameName',function(result,cb){
         let taskStage = new TaskStage({
@@ -58,7 +58,7 @@ function createTaskStage(req, res) {
         }]
     },function(err,response){
          if(err){
-           universalfunction.sendError(err,res);  
+           universalfunction.sendError(err,res);
          }else{
              universalfunction.sendSuccess(resp.SUCCESS.TASK_STAGE_CREATED,null,res);
          }
@@ -77,7 +77,7 @@ function getAllTaskStages(req, res) {
             universalfunction.sendSuccess(resp.SUCCESS.GOT_TASK_STAGE, result, res);
         }
     })
-} 
+}
 
 
 function getAllTasks(req,res){
@@ -85,12 +85,12 @@ function getAllTasks(req,res){
       function(cb){
       Task.find({},{"__v":0}, function (err, result) {
         if (err) {
-            cb(resp.ERROR.ERROR_GET_TASK);  
+            cb(resp.ERROR.ERROR_GET_TASK);
         } else {
             cb(null,result);
         }
     })
-      }   
+      }
     ],function(err,result){
         if(err){
             universalfunction.sendError(err, res);
@@ -107,12 +107,12 @@ function getAllUserTasks(req,res){
       function(cb){
       Task.find({"user_id":user_id},{"__v":0}, function (err, result) {
         if (err) {
-            cb(resp.ERROR.ERROR_GET_TASK);  
+            cb(resp.ERROR.ERROR_GET_TASK);
         } else {
             cb(null,result);
         }
     })
-      }   
+      }
     ],function(err,result){
         if(err){
             universalfunction.sendError(err, res);
@@ -139,7 +139,7 @@ function updateTaskStageName(req,res){
                 cb(resp.ERROR.TASK_ALREADY_EXIST);
             }else{
                 cb(null,userCount);
-            }    
+            }
     })
 },
     updateTaskStageName:['checkTaskStagePresentWithSameName',function(result,cb){
@@ -178,9 +178,9 @@ function createTask(req, res) {
                 cb(resp.ERROR.USER_TASK_ALREADY_EXIST);
             }else{
                 cb(null,userCount);
-            }    
+            }
     })
-       
+
 
        },
        createNewTask:['taskWithSameNameIsAvailableOrNot', function (result,cb) {
@@ -215,15 +215,12 @@ function createTask(req, res) {
 
 
 
-
-
-
-
 function changeTaskStage(req,res){
     var task_id = req.body.task_id;
     var user_id = req.body.user_id;
     var task_stage_id = req.body.task_stage_id;
     var parent_id = req.body.parent_id;
+
     async.auto({
         checkParticularTaskbelongtoGivenUser:function(cb){
            Task.count({ '_id':task_id,'user_id':user_id },function (err, userCount) {
@@ -233,8 +230,8 @@ function changeTaskStage(req,res){
                 cb(resp.ERROR.USER_NOT_BELONG);
             }else{
                 cb(null,userCount);
-            }    
-    })  
+            }
+          })
         },
         updateTaskStage:['checkParticularTaskbelongtoGivenUser',function(result,cb){
             Task.update({'_id':task_id,'is_child':0},{'stage_id':task_stage_id},function(err,result){
@@ -248,17 +245,18 @@ function changeTaskStage(req,res){
                     }else{
                         cb(resp.ERROR.CHILD_TASK_EXIST)
                     }
-                 }  
+                 }
             })
         }],
         updateParentStatus:['checkParticularTaskbelongtoGivenUser','updateTaskStage',function(result,cb){
-             Task.findOne({'_id':task_id}).populate('user_id').exec(function(err,res){
+             Task.findById(task_id).exec(function(err,user){
                  if(err){
                      console.log(err);
                  }else{
-                     console.log(res);
+                    console.log('res');
+                    console.log(user);
                  }
-             })           
+             })
         }]
     },function(err,result){
         if(err){
@@ -301,9 +299,9 @@ function createSubTask(req,res){
                 "stage_id" : stage_id[i]
              }
              console.log(data_raw);
-            data_to_insert.push(data_raw); 
+            data_to_insert.push(data_raw);
             }
-           cb(null,data_to_insert)    
+           cb(null,data_to_insert)
     }],
     savedChildTask:['inputValidation','createJson',function(result,cb){
             Task.insertMany(result.createJson,function(err,result){
@@ -313,7 +311,7 @@ function createSubTask(req,res){
                   console.log("result" + result);
                   cb(null,result);
               }
-          })            
+          })
     }]
     },function(err,result){
         if(err){
@@ -323,7 +321,3 @@ function createSubTask(req,res){
         }
     })
 }
-
-
-
-

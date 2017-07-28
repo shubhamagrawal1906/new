@@ -10,7 +10,7 @@ var mongoose = require('mongoose');
 
 
 
-var connection = mongoose.connect("mongodb://localhost/slicepay_app_database");
+var connection = mongoose.connect("mongodb://localhost:27017/slicepay");
 mongoose.connection.once("connected",function(err){
   console.log("mongo database connected");
 });
@@ -38,7 +38,6 @@ app.use(express.static(path.join(__dirname, 'app/public')));
 app.use('/', index);
 app.use('/users', users);
 app.use('/tasks',tasks);
-
 
 
 

@@ -24,16 +24,17 @@ function signUp(req, res) {
 					cb(err);
 				}else if (userCount == 1) {
                   console.log("User with same user name is present " + user_name);
-				  cb(1);  
+				  cb(1);
 				}else{
 					console.log("User with same user name is not present " + user_name);
-			        cb(null,user_name);	
+			        cb(null,user_name);
 			}
-				
+
 			})
 		},
 		savedUserRaw: ['checkUserPresentOrNot', function (result, cb) {
 			let hash_password = bcrypt.hashSync(password);
+			console.log(hash_password);
 			var raw = new User({
 				user_name: user_name,
 				email: email,
@@ -42,8 +43,10 @@ function signUp(req, res) {
 			});
 			raw.save(function (err, result) {
 				if (err) {
+					console.log(err);
 					cb(err);
 				} else {
+					console.log(result);
 					cb(null, result);
 				}
 			})
@@ -53,11 +56,11 @@ function signUp(req, res) {
 		if (err) {
 			if(err==1){
             console.log("there is some problem in saving data" + err);
-			universalfunction.sendError(resp.ERROR.USER_ALREADY_REGISTERED,res); 
+			universalfunction.sendError(resp.ERROR.USER_ALREADY_REGISTERED,res);
 			}else{
 			console.log("there is some problem in saving data" + err);
 			universalfunction.sendError(resp.ERROR.ERROR_IN_QUERY,res);
-			}	
+			}
 	} else {
 			console.log("successfully data store" + result);
 			universalfunction.sendSuccess(resp.SUCCESS.REGISTERED,null,res);
@@ -75,7 +78,7 @@ function login(req,res){
 				cb(err);
 			}else{
 			    if(result.length == 1){
-                 let hash_password = result[0].password;  
+                 let hash_password = result[0].password;
 				 if(bcrypt.compareSync(password, hash_password)){
                   console.log("login successfully");
 				  let user_type = userType.userType[result[0].user_type];
@@ -91,14 +94,14 @@ function login(req,res){
 				  cb(null,userData);
                  }else{
 				   console.log("password not matched");
-				   cb(resp.ERROR.INVALID_CREDENTIALS);	 
+				   cb(resp.ERROR.INVALID_CREDENTIALS);
 				 }
 				}else{
 	           console.log("user name not present");
-			   cb(resp.ERROR.INVALID_USERNAME);			
-				}	
+			   cb(resp.ERROR.INVALID_USERNAME);
+				}
 		}
-		}) 
+		})
 		}
 	},function(err,result){
 		if(err){
@@ -123,10 +126,10 @@ function allUser(req,res){
 				}
 			})
 		},
-     
+
 	},function(err,result){
 		if(err){
-	      universalfunction.sendError(err,res);		
+	      universalfunction.sendError(err,res);
 		}else{
 			universalfunction.sendSuccess(resp.SUCCESS.USER_FOUND,result.getAllUserDetails,res);
 		}

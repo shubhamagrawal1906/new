@@ -66,4 +66,4 @@ var UserTaskSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model("user_tasks", UserTaskSchema);
+module.exports = mongoose.model("Task", UserTaskSchema);
