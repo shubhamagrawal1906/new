@@ -1,0 +1,1 @@
+exports.userType = {1:'admin',2:'normal'}
