@@ -220,51 +220,61 @@ function changeTaskStage(req,res){
     var user_id = req.body.user_id;
     var task_stage_id = req.body.task_stage_id;
     var parent_id = req.body.parent_id;
-
-    async.auto({
-        checkParticularTaskbelongtoGivenUser:function(cb){
-           Task.count({ '_id':task_id,'user_id':user_id },function (err, userCount) {
-            if(err){
-               cb(resp.ERROR.INVALID_PARAMETER);
-            }else if(userCount==0){
-                cb(resp.ERROR.USER_NOT_BELONG);
-            }else{
-                cb(null,userCount);
-            }
-          })
-        },
-        updateTaskStage:['checkParticularTaskbelongtoGivenUser',function(result,cb){
-            Task.update({'_id':task_id,'is_child':0},{'stage_id':task_stage_id},function(err,result){
-                 if(err){
-                     cb(resp.ERROR.STAGE_NOT_CHANGE);
-                 }else{
-                     if(result.nModified){
-                     cb(null,result);
-                  }else if(result.n){
-                        cb(resp.ERROR.CHANGING_TO_SAME_STATE)
-                    }else{
-                        cb(resp.ERROR.CHILD_TASK_EXIST)
-                    }
-                 }
-            })
-        }],
-        updateParentStatus:['checkParticularTaskbelongtoGivenUser','updateTaskStage',function(result,cb){
-             Task.findById(task_id).exec(function(err,user){
-                 if(err){
-                     console.log(err);
-                 }else{
-                    console.log('res');
-                    console.log(user);
-                 }
-             })
-        }]
-    },function(err,result){
+    Task.findById(task_id).populate('user_id').exec(function(err,user){
         if(err){
-            universalfunction.sendError(err, res);
+            console.log(err);
         }else{
-            universalfunction.sendSuccess(resp.SUCCESS.STAGE_CHANGED, null, res);
+           console.log('res');
+           console.log(user);
         }
     })
+
+
+
+    // async.auto({
+    //     checkParticularTaskbelongtoGivenUser:function(cb){
+    //        Task.count({ '_id':task_id,'user_id':user_id },function (err, userCount) {
+    //         if(err){
+    //            cb(resp.ERROR.INVALID_PARAMETER);
+    //         }else if(userCount==0){
+    //             cb(resp.ERROR.USER_NOT_BELONG);
+    //         }else{
+    //             cb(null,userCount);
+    //         }
+    //       })
+    //     },
+    //     updateTaskStage:['checkParticularTaskbelongtoGivenUser',function(result,cb){
+    //         Task.update({'_id':task_id,'is_child':0},{'stage_id':task_stage_id},function(err,result){
+    //              if(err){
+    //                  cb(resp.ERROR.STAGE_NOT_CHANGE);
+    //              }else{
+    //                  if(result.nModified){
+    //                  cb(null,result);
+    //               }else if(result.n){
+    //                     cb(resp.ERROR.CHANGING_TO_SAME_STATE)
+    //                 }else{
+    //                     cb(resp.ERROR.CHILD_TASK_EXIST)
+    //                 }
+    //              }
+    //         })
+    //     }],
+    //     updateParentStatus:['checkParticularTaskbelongtoGivenUser','updateTaskStage',function(result,cb){
+    //          Task.findById(task_id).exec(function(err,user){
+    //              if(err){
+    //                  console.log(err);
+    //              }else{
+    //                 console.log('res');
+    //                 console.log(user);
+    //              }
+    //          })
+    //     }]
+    // },function(err,result){
+    //     if(err){
+    //         universalfunction.sendError(err, res);
+    //     }else{
+    //         universalfunction.sendSuccess(resp.SUCCESS.STAGE_CHANGED, null, res);
+    //     }
+    // })
 }
 
 
